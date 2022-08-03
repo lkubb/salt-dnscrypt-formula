@@ -1,0 +1,148 @@
+{%- set all_ports = [] %}
+{%- set privileged_ports = [] %}
+{%- for listen in dnscrypt.config.listen_addresses %}
+{%-   set addr, port = listen.split(":") %}
+{%-   do all_ports.append(port) %}
+{%-   if port | int < 1024 %}
+{%-     do privileged_ports.append(port) %}
+{%-   endif %}
+{%- endfor %}
+[Unit]
+Description=Encrypted/authenticated DNS proxy
+Documentation=https://github.com/DNSCrypt/dnscrypt-proxy/wiki
+ConditionFileIsExecutable=/opt/dnscrypt-proxy/dnscrypt-proxy
+## Socket activation
+# After=network.target
+# Before=nss-lookup.target
+# Wants=nss-lookup.target
+
+[Service]
+WorkingDirectory=/var/lib/dnscrypt-proxy
+EnvironmentFile=-/etc/sysconfig/dnscrypt-proxy
+ExecStart=/opt/dnscrypt-proxy/dnscrypt-proxy \
+            -config {{ dnscrypt.lookup.config }} \
+            -logfile /var/log/dnscrypt-proxy/dnscrypt-proxy.log \
+            -pidfile /run/dnscrypt-proxy/dnscrypt-proxy.pid
+
+# Process management
+####################
+Type=simple
+PIDFile=/run/dnscrypt-proxy/dnscrypt-proxy.pid
+## Socket activation
+# NonBlocking=true
+Restart=always
+RestartSec=120
+StartLimitInterval=5
+StartLimitBurst=10
+
+# Directory creation and permissions
+####################################
+DynamicUser=true
+User={{ dnscrypt.lookup.user }}
+
+CacheDirectory=dnscrypt-proxy
+ConfigurationDirectory=dnscrypt-proxy
+LogsDirectory=dnscrypt-proxy
+RuntimeDirectory=dnscrypt-proxy
+StateDirectory=dnscrypt-proxy
+
+# Hardening measures
+####################
+
+# Provide a private /tmp and /var/tmp. Implied by DynamicUser=yes.
+PrivateTmp=true
+
+# Mount everything but /dev/, /proc/ and /sys/ read-only for the process.
+# Implied by DynamicUser=yes.
+ProtectSystem=strict
+
+# Deny access to /home, /root and /run/user. DynamicUser implies read-only
+ProtectHome=true
+
+# Disallow the process and all of its children to gain
+# new privileges through execve().
+NoNewPrivileges=true
+
+# Use a new /dev namespace only populated with API pseudo devices
+# such as /dev/null, /dev/zero and /dev/random.
+PrivateDevices=true
+
+# Deny the creation of writable and executable memory mappings.
+MemoryDenyWriteExecute=true
+
+# Make /proc/sys/, /sys/, /proc/sysrq-trigger, /proc/latency_stats, /proc/acpi,
+# /proc/timer_stats, /proc/fs and /proc/irq read-only.
+ProtectKernelTunables=true
+
+# Deny explicit kernel module loading.
+ProtectKernelModules=true
+
+# Deny access to the kernel log ring buffer.
+ProtectKernelLogs=true
+
+# Deny writes to the hardware clock or system clock.
+ProtectClock=true
+
+# Hide processes owned by other users from /proc/.
+ProtectProc=invisible
+
+# Hide all files and directories not directly associated with process management
+# and introspection in the /proc/ file system configured for the unit's processes.
+ProcSubset=pid
+
+# Deny write access to cgroups hierarchies accessible through /sys/fs/cgroup/.
+ProtectControlGroups=true
+
+# Restrict the set of accessible socket address families to those listed.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+# Deny access to any kind of namespacing.
+RestrictNamespaces=true
+
+# Deny changing the kernel execution domain.
+LockPersonality=true
+
+# This can be used to deny access to specific IP addresses.
+# `any` blocks all.
+# IPAddressDeny=any
+
+# Set up up a new user namespace for the executed processes and
+# configure a minimal user and group mapping.
+PrivateUsers={{ not (privileged_ports | to_bool) | lower }}
+
+# Deny setting suid/sgid bits.
+RestrictSUIDSGID=true
+
+# Remove all System V and POSIX IPC objects owned by user/group on stop.
+RemoveIPC=true
+
+# Deny any attempts to enable realtime scheduling. (prevent DoS)
+RestrictRealtime=true
+
+# Set up a new UTS namespace and prevent changing hostname/domainname.
+ProtectHostname=true
+
+# Empty capability bounding set. This is implied when running as non-root.
+CapabilityBoundingSet=
+{%- if privileged_ports %}
+
+# If dnscrypt-proxy needs to bind to a privileged port, it needs this
+# capability. Restrict it to configured ports only.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+SocketBindAllow={{ all_ports | join(" ") }}
+SocketBindDeny=any
+{%- endif %}
+
+# Allow system calls used by common system services.
+SystemCallFilter=@system-service
+# Explicitly deny system calls listed in the docker seccomp blacklist,
+# except for "clone", which is a core requirement for systemd services.
+SystemCallFilter=~add_key clone3 kcmp keyctl mbind move_pages name_to_handle_at personality process_vm_readv process_vm_writev request_key set_mempolicy setns unshare userfaultfd
+
+# Only permit native system calls.
+SystemCallArchitectures=native
+
+[Install]
+## Socket activation
+# Also=dnscrypt-proxy.socket
+WantedBy=multi-user.target

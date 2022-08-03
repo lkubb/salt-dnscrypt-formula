@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+# vim: ft=yaml
+#
+# Set default values.
+---
+values:
+  lookup:
+    rootgroup: root
+    pkg:
+      name: dnscrypt-proxy
+    config: '/etc/dnscrypt-proxy/dnscrypt-proxy.toml'
+    service:
+      name: dnscrypt-proxy
+      unit: /etc/systemd/system/{name}.service
+    bin:
+      hash: cdda45f82ee8c49f899ccd5dd4b8ddb83a0562f4fc081933a4810e5083107d16
+      pkg: https://github.com/DNSCrypt/dnscrypt-proxy/releases/download/2.1.2/dnscrypt-proxy-linux_x86_64-2.1.2.tar.gz
+    paths:
+      bin: /opt/dnscrypt-proxy
+    pip_pkg: python3-pip
+    user: dnscrypt-proxy
+  config: {}
+  install_method: bin
+  merge_existing_config: true
+  # Just here for testing
+  added_in_defaults: defaults_value
+  winner: defaults
+...
