@@ -14,3 +14,5 @@ dnscrypt-service-running-service-running:
     - enable: True
     - watch:
       - sls: {{ sls_config_file }}
+      - dnscrypt-proxy is installed
+      - dnscrypt-proxy service is installed
