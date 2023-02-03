@@ -8,6 +8,8 @@ values:
   lookup:
     arch: amd64
     rootgroup: root
+    pkg:
+      name: dnscrypt-proxy
     config: '/etc/dnscrypt-proxy/dnscrypt-proxy.toml'
     service:
       name: dnscrypt-proxy

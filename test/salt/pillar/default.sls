@@ -7,6 +7,8 @@ dnscrypt:
     # Just for testing purposes
     winner: lookup
     added_in_lookup: lookup_value
+    pkg:
+      name: dnscrypt-proxy
     config: '/etc/dnscrypt-proxy/dnscrypt-proxy.toml'
     service:
       name: dnscrypt-proxy
