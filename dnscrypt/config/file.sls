@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vim: ft=sls
 
 {%- set tplroot = tpldir.split('/')[0] %}
@@ -8,13 +7,13 @@
 include:
   - {{ sls_package_install }}
 
-dnscrypt-config-file-file-managed:
+dnscrypt-proxy configuration is managed:
   file.serialize:
     - name: {{ dnscrypt.lookup.config }}
-    - mode: 644
+    - mode: '0644'
     - user: root
     - group: {{ dnscrypt.lookup.rootgroup }}
-    - makedirs: True
+    - makedirs: true
     - require:
       - sls: {{ sls_package_install }}
     - serializer: toml

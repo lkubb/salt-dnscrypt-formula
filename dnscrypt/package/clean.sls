@@ -1,5 +1,9 @@
-# -*- coding: utf-8 -*-
 # vim: ft=sls
+
+{#-
+    Removes the dnscrypt package.
+    Has a depency on `dnscrypt.config.clean`_.
+#}
 
 {%- set tplroot = tpldir.split('/')[0] %}
 {%- set sls_config_clean = tplroot ~ '.config.clean' %}
@@ -8,7 +12,7 @@
 include:
   - {{ sls_config_clean }}
 
-dnscrypt-package-clean-pkg-removed:
+dnscrypt-proxy is removed:
   pkg.removed:
     - name: {{ dnscrypt.lookup.pkg.name }}
     - require:

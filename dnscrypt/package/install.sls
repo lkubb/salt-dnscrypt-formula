@@ -75,7 +75,7 @@ dnscrypt-proxy service is installed:
         dnscrypt: {{ dnscrypt | json }}
 {%- else %}
 
-dnscrypt-package-install-pkg-installed:
+dnscrypt-proxy is installed:
   pkg.installed:
     - name: {{ dnscrypt.lookup.pkg.name }}
 {%- endif %}
