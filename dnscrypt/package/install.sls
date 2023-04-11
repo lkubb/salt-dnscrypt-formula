@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # vim: ft=sls
 
-{%- set tplroot = tpldir.split('/')[0] %}
+{%- set tplroot = tpldir.split("/")[0] %}
 {%- from tplroot ~ "/map.jinja" import mapdata as dnscrypt with context %}
 {%- from tplroot ~ "/libtofs.jinja" import files_switch with context %}
 
@@ -62,8 +61,8 @@ dnscrypt-proxy example config is copied:
 dnscrypt-proxy service is installed:
   file.managed:
     - name: {{ dnscrypt.lookup.service.unit.format(name=dnscrypt.lookup.service.name) }}
-    - source: {{ files_switch(['dnscrypt-proxy.service', 'dnscrypt-proxy.service.j2'],
-                              lookup='dnscrypt-proxy service is installed'
+    - source: {{ files_switch(["dnscrypt-proxy.service", "dnscrypt-proxy.service.j2"],
+                              lookup="dnscrypt-proxy service is installed"
                  )
               }}
     - user: root
