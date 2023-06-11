@@ -2,7 +2,7 @@
 
 {#-
     Removes the dnscrypt package.
-    Has a depency on `dnscrypt.config.clean`_.
+    Has a dependency on `dnscrypt.config.clean`_.
 #}
 
 {%- set tplroot = tpldir.split("/")[0] %}
