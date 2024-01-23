@@ -28,13 +28,14 @@
       "lookup": {
         "pip_pkg": "python3-pip",
         "bin": {
-          "hash": "cdda45f82ee8c49f899ccd5dd4b8ddb83a0562f4fc081933a4810e5083107d16",
-          "pkg": "https://github.com/DNSCrypt/dnscrypt-proxy/releases/download/2.1.2/dnscrypt-proxy-linux_x86_64-2.1.2.tar.gz"
+          "hash": "eeb5e78e8930cd5ef8e332a4ee2730d02a19bb5097221a56d15ae4b582f4abd2",
+          "pkg": "https://github.com/DNSCrypt/dnscrypt-proxy/releases/download/2.1.5/dnscrypt-proxy-linux_x86_64-2.1.5.tar.gz"
         },
         "paths": {
           "bin": "/opt/dnscrypt-proxy"
         },
         "service": {
+          "name": "dnscrypt-proxy",
           "unit": "/etc/systemd/system/{name}.service"
         },
         "user": "dnscrypt-proxy"
